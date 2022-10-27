@@ -1,0 +1,16 @@
+:root{
+    --z-view-global-font-size: 14px;
+}
+
+.box{
+    background: url(../imgs/1.jpg);
+    box-shadow: 0 0 0 black;
+    display: flex;
+}
+
+@font-face {
+    font-family: "iconfont"; 
+    src: url('../fonts/iconfont.woff2') format('woff2'),
+         url('../fonts/iconfont.woff') format('woff'),
+         url('../fonts/iconfont.ttf') format('truetype');
+  }
