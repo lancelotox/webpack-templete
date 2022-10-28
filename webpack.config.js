@@ -13,9 +13,9 @@ const TerserWebpackPlugin = require('terser-webpack-plugin');
 //图片压缩插件
 const ImageMinimizerPlugin = require('image-minimizer-webpack-plugin');
 //启用preload、prefetch插件
-const PreloadWebapckPlugin = require('@vue/preload-webpack-plugin');
+// const PreloadWebapckPlugin = require('@vue/preload-webpack-plugin');
 //PWA渐进式应用插件
-const WorkboxWebpackPlugin = require('workbox-webpack-plugin');
+// const WorkboxWebpackPlugin = require('workbox-webpack-plugin');
 
 const threads = os.cpus().length;
 
@@ -171,7 +171,7 @@ function GetCommonOptions() {
                         filename: './static/js/core.[contenthash:10].js',
                         test: /core-js/,
                         minChunks: 1,
-                        priority: -30,
+                        priority: 0,
                         reuseExistingChunk: true,
                     }
                 },
@@ -206,14 +206,14 @@ function GetCommonOptions() {
             //     as: 'script'
             // }),
             //prefetch
-            new PreloadWebapckPlugin({
-                rel: 'prfetch'
-            }),
+            // new PreloadWebapckPlugin({
+            //     rel: 'prfetch'
+            // }),
             //PWA
-            new WorkboxWebpackPlugin.GenerateSW({
-                clientsClaim: true,
-                skipWaiting: true,
-            })
+            // new WorkboxWebpackPlugin.GenerateSW({
+            //     clientsClaim: true,
+            //     skipWaiting: true,
+            // })
         ]
     }
 }
