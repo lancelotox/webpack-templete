@@ -27,3 +27,13 @@
 - 使用Network Cache对输出文件进行更好命名，方便缓存。
 - 使用Core-Js对就是进行兼容性处理，提高兼容性。
 - 使用PWA让代码可以离线访问。
+
+---
+
+### 1. 图片压缩库
+> "image-minimizer-webpack-plugin": "^3.6.1",
+    "imagemin": "^8.0.1",
+    "imagemin-gifsicle": "^7.0.0",
+    "imagemin-jpegtran": "^7.0.0",
+    "imagemin-optipng": "^8.0.0",
+    "imagemin-svgo": "^10.0.1",

@@ -11,7 +11,7 @@ const CssMinimizerWebpackPlugin = require('css-minimizer-webpack-plugin');
 //js压缩插件
 const TerserWebpackPlugin = require('terser-webpack-plugin');
 //图片压缩插件
-const ImageMinimizerPlugin = require('image-minimizer-webpack-plugin');
+// const ImageMinimizerPlugin = require('image-minimizer-webpack-plugin');
 //启用preload、prefetch插件
 // const PreloadWebapckPlugin = require('@vue/preload-webpack-plugin');
 //PWA渐进式应用插件
@@ -38,8 +38,8 @@ function GetNpmLifecycleScriptParams() {
 function GetCommonOptions() {
     return {
         entry: {
-            app: './src/app.js',
-            main: './src/main.js'
+            main: './src/main.ts',
+            app: './src/app.ts'
         },
         output: {
             path: path.resolve(__dirname, 'dist'),
@@ -92,6 +92,22 @@ function GetCommonOptions() {
                                 }
                             ]
                         }, {
+                            test: /\.ts$/,
+                            //排除node_modules文件夹
+                            exclude: /node_modules/,
+                            use: [
+                                {
+                                    loader: 'babel-loader',
+                                    //babel-loader设置缓存
+                                    options: {
+                                        cacheDirectory: true,
+                                        cacheCompression: false,
+                                        plugins: ['@babel/plugin-transform-runtime'], //不在为每个文件注入runtime，减小代码体积
+                                    }
+                                },
+                                "ts-loader"
+                            ]
+                        }, {
                             test: /\.png|jpe?g|gif|webp$/,
                             type: 'asset',
                             parser: {
@@ -115,36 +131,38 @@ function GetCommonOptions() {
             ]
         },
         optimization: {
+            minimize: false,
             //压缩操作
             minimizer: [
                 new CssMinimizerWebpackPlugin(),
                 new TerserWebpackPlugin({
                     parallel: threads //开启多线程
                 }),
-                new ImageMinimizerPlugin({
-                    minimizer: {
-                        implementation: ImageMinimizerPlugin.imageminGenerate,
-                        options: {
-                            plugins: [
-                                ["gifsicle", { interlaced: true }],
-                                ["jpegtran", { progressive: true }],
-                                ["optipng", { optimizationLevel: 5 }],
-                                ["svgo", {
-                                    plugins: [
-                                        "preset-default",
-                                        "prefixIds",
-                                        {
-                                            name: 'sortAttrs',
-                                            params: {
-                                                xmlnsOrder: 'alphabetical'
-                                            }
-                                        }
-                                    ]
-                                }],
-                            ]
-                        }
-                    }
-                })
+                //图片压缩
+                // new ImageMinimizerPlugin({
+                //     minimizer: {
+                //         implementation: ImageMinimizerPlugin.imageminGenerate,
+                //         options: {
+                //             plugins: [
+                //                 ["gifsicle", { interlaced: true }],
+                //                 ["jpegtran", { progressive: true }],
+                //                 ["optipng", { optimizationLevel: 5 }],
+                //                 ["svgo", {
+                //                     plugins: [
+                //                         "preset-default",
+                //                         "prefixIds",
+                //                         {
+                //                             name: 'sortAttrs',
+                //                             params: {
+                //                                 xmlnsOrder: 'alphabetical'
+                //                             }
+                //                         }
+                //                     ]
+                //                 }],
+                //             ]
+                //         }
+                //     }
+                // })
             ],
             //代码分割
             splitChunks: {
@@ -180,6 +198,9 @@ function GetCommonOptions() {
             runtimeChunk: {
                 name: entrypoint => `runtime~${entrypoint.name}.js`
             }
+        }, 
+        resolve: {
+            extensions: ['.tsx', '.ts', '.js'],
         },
         plugins: [
             //eslint语法检查

@@ -1,3 +1,3 @@
-export default function reduce(...args){
+export default function (...args){
     return args.reduce((x, y)=> x + y);
 }

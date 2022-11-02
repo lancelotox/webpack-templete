@@ -11,5 +11,5 @@ module.exports = {
                 ie: '8' // 等等
             }
         }
-    ]]
+    ], "@babel/preset-typescript"]
 }

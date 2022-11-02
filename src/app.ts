@@ -1,4 +1,3 @@
-
 import reduce from './js/reduce';
 
 console.log(reduce(2));
