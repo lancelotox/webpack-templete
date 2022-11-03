@@ -1,6 +1,6 @@
 {
   "name": "webpack-templete-env",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "webpack config templete",
   "main": "./src/app.js",
   "type": "commonjs",
@@ -50,8 +50,5 @@
     "last 2 version",
     "> 1%",
     "not dead"
-  ],
-  "dependencies": {
-    "z-util-page": "^1.9.6"
-  }
+  ]
 }
