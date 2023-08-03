@@ -202,7 +202,7 @@ function GetCommonOptions() {
       }
     },
     resolve: {
-      extensions: ['.tsx', '.ts', '.js'],
+      extensions: ['.tsx', '.ts', '.js', '.jsx', 'scss', 'sass', 'vue'],
     },
     plugins: [
       //eslint语法检查
