@@ -194,7 +194,7 @@ function GetCommonOptions() {
           }
         },
       },
-      //运行时chunk配置()
+      //运行时chunk配置
       runtimeChunk: {
         name: 'runtime'
         // 多入口项目使用运行时chunk会导致多次执行
