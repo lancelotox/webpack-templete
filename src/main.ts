@@ -6,6 +6,8 @@ if(module.hot){
     module.hot.accept("./js/reduce.ts");
 }
 
+console.log('123')
+
 //js按需引入
 // let btn = document.createElement('input');
 // btn.setAttribute('type', 'button');
