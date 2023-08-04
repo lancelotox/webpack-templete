@@ -4,6 +4,8 @@ const os = require('os');
 const EslintPlugin = require('eslint-webpack-plugin');
 //生成html插件
 const HtmlWebPackPlugin = require('html-webpack-plugin');
+// 额外线程模拟ts类型检查
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 //抽取css文件插件
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 //css压缩插件
@@ -18,22 +20,6 @@ const TerserWebpackPlugin = require('terser-webpack-plugin');
 // const WorkboxWebpackPlugin = require('workbox-webpack-plugin');
 
 const threads = os.cpus().length;
-
-const MODE = GetNpmLifecycleScriptParams().mode || 'development';
-
-function GetNpmLifecycleScriptParams() {
-  const params = {};
-  const input = process.env.npm_lifecycle_script;
-  const Regexp = new RegExp(/--([\w]*)(?:[\s]*=[\s]*|\s)([\w]*)(?:\b|-*|\s*)/, 'g');
-
-  let result;
-
-  while ((result = Regexp.exec(input)) !== null) {
-    params[result[1]] = result[2];
-  }
-
-  return params;
-}
 
 function GetCommonOptions() {
   return {
@@ -105,7 +91,13 @@ function GetCommonOptions() {
                     plugins: ['@babel/plugin-transform-runtime'], //不在为每个文件注入runtime，减小代码体积
                   }
                 },
-                "ts-loader"
+                {
+                  loader: 'ts-loader',
+                  options: {
+                    // 关闭ts类型检查,只做转义
+                    transpileOnly: true
+                  }
+                }
               ]
             }, {
               test: /\.png|jpe?g|gif|webp$/,
@@ -136,7 +128,15 @@ function GetCommonOptions() {
       minimizer: [
         new CssMinimizerWebpackPlugin(),
         new TerserWebpackPlugin({
-          parallel: threads //开启多线程
+          parallel: threads, //开启多线程
+          terserOptions: {
+            compress: {
+              // 生产环境去除日志
+              drop_console: true,
+              // 生产环境去除断点
+              drop_debugger: true
+            }
+          }
         }),
         //图片压缩
         // new ImageMinimizerPlugin({
@@ -223,6 +223,13 @@ function GetCommonOptions() {
         filename: 'static/css/[name].[contenthash:10].css',
         chunkFilename: 'static/css/[name].chunk.[contenthash:10].css'
       }),
+      // 开启新线程完成ts类型检查
+      new ForkTsCheckerWebpackPlugin({
+        // 是否与编译同步进行类型检查
+        async: false,
+        // 是否在devServer显示编译错误
+        devServer: true
+      }),
       //preload
       // new PreloadWebapckPlugin({
       //     rel: 'preload',
@@ -241,7 +248,7 @@ function GetCommonOptions() {
   }
 }
 
-function GetDevOptions() {
+function GetDevOptions(ScriptParams) {
   const option = GetCommonOptions();
   option.mode = 'development';
   option.devServer = {
@@ -250,23 +257,55 @@ function GetDevOptions() {
     //自动打开页面
     open: true,
     //开启HMR模块热更新
-    hot: true
+    hot: true,
+    // 是否在文件更新后刷新浏览器
+    // liveReload: false,
+    // 写入硬盘
+    // writeToDisk: true
   }
   //源代码映射
   option.devtool = 'cheap-module-source-map';
   return option;
 }
 
-function GetProdOptions() {
+function GetProdOptions(ScriptParams) {
   const option = GetCommonOptions();
   option.mode = 'production';
   // option.devtool = 'source-map';
   // GB2312转码
   // const EncodePlugin = require('./plugins/encode');
   // option.plugins.push(new EncodePlugin());
+
+  // 包分析器插件,生成构建报告
+  if ('report' in ScriptParams) {
+    const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+    option.plugins.push(// 配置包分析器
+      new BundleAnalyzerPlugin({
+        analyzerMode: 'static',
+        // analyzerMode: 'server',
+        // analyzerMode: 'disabled',
+        // analyzerHost: '127.0.0.1',
+        // analyzerPort: 8888,
+        reportFilename: '../report/report.html',
+        defaultSizes: 'gzip',
+        generateStatsFile: true, // 如果为true，则Webpack Stats JSON文件将在bundle输出目录中生成
+        openAnalyzer: false, // 默认在浏览器中自动打开报告
+        statsFilename: '../report/stats.json', // 如果generateStatsFile为true，将会生成Webpack Stats JSON文件的名字
+        statsOptions: { source: false }
+      })
+    );
+  }
+
   return option;
 }
 
-module.exports = MODE === 'production' ? GetProdOptions() : GetDevOptions();
+module.exports = {
+  getOptions: function (ScriptParams) {
+    if (ScriptParams.mode === 'development') {
+      return GetDevOptions(ScriptParams);
+    }
+    return GetProdOptions(ScriptParams);
+  }
+}
 
 

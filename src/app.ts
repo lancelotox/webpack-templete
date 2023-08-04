@@ -1,10 +1,6 @@
-import reduce from './js/reduce';
-
-console.log(reduce(2));
-console.log(reduce(2));
+import './css/index.css';
+import './css/index.sass';
 
 new Promise(function(){
-    console.log(3);
+  console.log('入口app');
 });
-
-[1,2,3].includes(3)

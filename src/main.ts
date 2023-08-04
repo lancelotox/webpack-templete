@@ -1,12 +1,20 @@
-import './css/index.css';
-import './css/index.sass';
+import reduce from './js/reduce';
 
-//js模块热更新
+console.log('入口main');
+
+reduce(2);
+
+[1,2,3].includes(3);
+
+// 该入口依赖的所有模块同时设置热更新
 if(module.hot){
-    module.hot.accept("./js/reduce.ts");
+  module.hot.accept();
 }
 
-console.log('123')
+// 指定模块热更新
+if(module.hot){
+  module.hot.accept("./js/reduce.ts");
+}
 
 //js按需引入
 // let btn = document.createElement('input');
