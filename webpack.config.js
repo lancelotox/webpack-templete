@@ -21,7 +21,7 @@ const TerserWebpackPlugin = require('terser-webpack-plugin');
 
 const threads = os.cpus().length;
 
-function GetCommonOptions() {
+function GetCommonOptions(ScriptParams) {
   return {
     entry: {
       main: './src/main.ts',
@@ -31,7 +31,7 @@ function GetCommonOptions() {
       path: path.resolve(__dirname, 'dist'),
       filename: 'static/js/[name].[contenthash:10].js',
       //打包时自动清理输出文件夹
-      clean: true,
+      clean: 'clean' in ScriptParams,
       //为打包输出的其他chunk命名
       chunkFilename: 'static/js/[name].chunk.[contenthash:10].js',
       //为通过type；asset处理的资源统一命名
@@ -201,8 +201,14 @@ function GetCommonOptions() {
         // name: (entrypoint) => `runtime~${entrypoint.name}`,
       }
     },
+    // 配置性能提示
+    performance: { hints: false },
     resolve: {
       extensions: ['.tsx', '.ts', '.js', '.jsx', 'scss', 'sass', 'vue'],
+      // 配置路径别名
+      alias: {
+        "@": path.resolve(__dirname, 'src')
+      }
     },
     plugins: [
       //eslint语法检查
@@ -249,9 +255,13 @@ function GetCommonOptions() {
 }
 
 function GetDevOptions(ScriptParams) {
-  const option = GetCommonOptions();
+  const option = GetCommonOptions(ScriptParams);
   option.mode = 'development';
   option.devServer = {
+    // 使用的静态资源路径
+    // static: {
+    //   directory: path.join(__dirname, 'public'),
+    // },
     host: 'localhost',
     port: '8080',
     //自动打开页面
@@ -269,7 +279,7 @@ function GetDevOptions(ScriptParams) {
 }
 
 function GetProdOptions(ScriptParams) {
-  const option = GetCommonOptions();
+  const option = GetCommonOptions(ScriptParams);
   option.mode = 'production';
   // option.devtool = 'source-map';
   // GB2312转码

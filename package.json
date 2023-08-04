@@ -1,6 +1,6 @@
 {
   "name": "webpack-templete-env",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "webpack config templete",
   "keywords": [
     "webpack",
@@ -11,6 +11,7 @@
   "scripts": {
     "dev": "node webpack.js",
     "build": "node webpack.js --mode production",
+    "build:clean": "node webpack.js --mode production --clean",
     "build:report": "node webpack.js --mode production --report"
   },
   "author": "zhou feng",
