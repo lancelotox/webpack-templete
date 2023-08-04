@@ -1,6 +1,5 @@
 # 项目排除路径
 /node_modules/
-/package-lock.json
 /dist
 /.vscode
 /report
