@@ -22,12 +22,25 @@ const devServer = require('webpack-dev-server');
 // 导入配置
 const Options = require('./webpack.config.js').getOptions(ScriptParams);
 
+const package = require('./package.json');
+
+// 控制台进度条
+const WebpackBar = require('webpackbar');
+let progressPlugin = new WebpackBar({
+  name: package.name, // 进度条名称
+  color: "#2f90b9",  // 默认green，进度条颜色支持HEX
+  basic: true,   // 默认true，启用一个简单的日志报告器
+  profile: false,  // 默认false，启用探查器。
+})
+if (!Array.isArray(Options.plugins)) Options.plugins = [];
+Options.plugins.push(progressPlugin);
+
 const Compiler = webpack(Options);
 
 if (MODE === 'development') {
   const devOp = Options.devServer;
   // 获取实例
-  const server = new devServer(devOp, Compiler);
+  const server = new devServer({ ...devOp }, Compiler);
   // 启动服务
   const runServer = async () => {
     console.log('Starting server...');
@@ -51,12 +64,12 @@ if (MODE === 'development') {
       return;
     }
     // 控制台输出
-    console.log(
-      stats.toString({
-        chunks: false, // 使构建过程更静默无输出
-        colors: true,  // 在控制台展示颜色
-      })
-    );
+    // console.log(
+    //   stats.toString({
+    //     chunks: false, // 使构建过程更静默无输出
+    //     colors: true,  // 在控制台展示颜色
+    //   })
+    // );
     // 关闭构建进程
     Compiler.close((closeErr) => {
       if (closeErr) {
