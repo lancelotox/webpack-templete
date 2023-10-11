@@ -52,5 +52,8 @@
     "last 2 version",
     "> 1%",
     "not dead"
-  ]
+  ],
+  "dependencies": {
+    "css-unicode-loader": "^1.0.3"
+  }
 }

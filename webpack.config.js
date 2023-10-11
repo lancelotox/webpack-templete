@@ -47,6 +47,7 @@ function GetCommonOptions(ScriptParams) {
               use: [
                 MiniCssExtractPlugin.loader,
                 'css-loader',
+                'css-unicode-loader',
                 {
                   loader: 'postcss-loader',
                   options: {
